@@ -22,6 +22,9 @@
 #define LIBPATHRESOLVER_H
 
 
+#include "heap.h"
+
+
 typedef struct {
   uint64_t datapath_id;
   dlist_element *in_links;
@@ -43,8 +46,30 @@ typedef struct {
 typedef struct {
   hash_table *node_table;
   hash_table *link_table;
+  size_t node_num;
+  size_t link_num;
 } topology_cache_t;
 
+
+typedef struct {
+  uint64_t root_dpid;
+  hash_table *node_table;
+  hash_table *link_table;
+  size_t node_num;
+  size_t link_num;
+} tree_t;
+
+
+typedef struct {
+  uint64_t datapath_id;
+  uint16_t out_port;
+} hop_t;
+
+
+tree_t *create_tree( const uint64_t root, const topology_cache_t *cache );
+void destroy_tree( tree_t *tree );
+list_element *resolve_path_from_tree( tree_t *tree, uint64_t from, uint64_t to );
+void destroy_path( list_element *path );
 
 topology_cache_t *create_topology_cache();
 void destroy_topology_cache( topology_cache_t *cache );

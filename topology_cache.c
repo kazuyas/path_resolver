@@ -30,7 +30,9 @@ create_topology_cache() {
   memset( cache, 0, sizeof( topology_cache_t ) );
   cache->node_table = create_hash( compare_hash_node, hash_node );
   cache->link_table = create_hash( compare_hash_link, hash_link );
-  
+  cache->node_num = 0;
+  cache->link_num = 0;
+
   return cache;
 }
 
@@ -64,9 +66,11 @@ add_node_to_cache( topology_cache_t *cache, uint64_t datapath_id, void *data ) {
 
   if ( lookup_hash_entry( cache->node_table, &node->datapath_id ) != NULL ) {
     error( "%s : Node (datapath_id=0x%lx) exists.", __func__ );
+    free( node );
     return NULL;
   }
   insert_hash_entry( cache->node_table, &node->datapath_id, node );
+  cache->node_num++;
   
   return node;
 }
@@ -82,6 +86,7 @@ del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id ) {
     delete_dlist( node->out_links );
     memset( node, 0, sizeof( node_t ) );
     free( node );
+    cache->node_num--;
   }
 
   return;
@@ -119,6 +124,8 @@ add_link_to_cache( topology_cache_t *cache, uint64_t id, uint64_t from, uint16_t
   insert_before_dlist( from_node->out_links, link );
   insert_before_dlist( to_node->in_links, link );
 
+  cache->link_num++;
+
   return link;
 }
 
@@ -144,7 +151,9 @@ del_link_from_cache( topology_cache_t *cache, uint64_t id ) {
   
   memset( link, 0, sizeof( link_t ) );
   free( link );
-  
+
+  cache->link_num--;
+
   return;
 }
 
