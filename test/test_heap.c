@@ -10,7 +10,7 @@ static size_t default_heap_size = 1000;
 
 void
 test1() {
-  heap_t *heap = create_heap( compare_heap_node, set_index_for_node, default_heap_size );
+  heap_t *heap = create_heap( compare_heap_node, NULL, default_heap_size );
 
   if ( heap != NULL ) {
     return;
@@ -21,7 +21,7 @@ test1() {
 
 void
 test2() {
-  heap_t *heap = create_heap( compare_heap_uint8, set_index_for_node, default_heap_size );
+  heap_t *heap = create_heap( compare_heap_uint8, NULL, default_heap_size );
   uint8_t val1 = 100;
   uint8_t val2 = 22;
 
@@ -51,7 +51,7 @@ test2() {
 
 void
 test3() {
-  heap_t *heap = create_heap( compare_heap_uint8, set_index_for_node, default_heap_size );
+  heap_t *heap = create_heap( compare_heap_uint8, NULL, default_heap_size );
 
   srandom(100);
 
@@ -88,7 +88,7 @@ test3() {
 
 void
 test4() {
-  heap_t *heap = create_heap( compare_heap_node, set_index_for_node, default_heap_size );
+  heap_t *heap = create_heap( compare_heap_node, NULL, default_heap_size );
 
   srandom(100);
 

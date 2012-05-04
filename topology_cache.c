@@ -22,10 +22,130 @@
 #include "pathresolver.h"
 
 
+topology_cache_t *
+create_topology_cache() {
+  topology_cache_t *cache = ( topology_cache_t * )malloc( sizeof( topology_cache_t ) );
+  die_if_NULL( cache );
+
+  memset( cache, 0, sizeof( topology_cache_t ) );
+  cache->node_table = create_hash( compare_hash_node, hash_node );
+  cache->link_table = create_hash( compare_hash_link, hash_link );
+  
+  return cache;
+}
+
+
 void
-set_index_for_node( void *value, int index ) {
-  UNUSED( value );
-  UNUSED( index );
+destroy_topology_cache( topology_cache_t *cache ) {
+  die_if_NULL( cache );
+
+  delete_hash( cache->node_table );
+  delete_hash( cache->link_table );
+
+  memset( cache, 0, sizeof( topology_cache_t ) );
+  free( cache );
+
+  return;
+}
+
+
+node_t *
+add_node_to_cache( topology_cache_t *cache, uint64_t datapath_id, void *data ) {
+  die_if_NULL( cache );
+  
+  node_t *node = ( node_t * )malloc( sizeof( node_t ) );
+  die_if_NULL( node );
+
+  memset( node, 0, sizeof( node_t ) );
+  node->datapath_id = datapath_id;
+  node->data = data;
+  node->in_links = create_dlist();
+  node->out_links = create_dlist();
+
+  if ( lookup_hash_entry( cache->node_table, &node->datapath_id ) != NULL ) {
+    error( "%s : Node (datapath_id=0x%lx) exists.", __func__ );
+    return NULL;
+  }
+  insert_hash_entry( cache->node_table, &node->datapath_id, node );
+  
+  return node;
+}
+
+
+void
+del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id ) {
+  die_if_NULL( cache );
+
+  node_t *node = delete_hash_entry( cache->node_table, &datapath_id );
+  if ( node != NULL ) {
+    delete_dlist( node->in_links );
+    delete_dlist( node->out_links );
+    memset( node, 0, sizeof( node_t ) );
+    free( node );
+  }
+
+  return;
+}
+
+
+link_t *
+add_link_to_cache( topology_cache_t *cache, uint64_t id, uint64_t from, uint16_t from_port, uint64_t to, uint16_t to_port, void *data ) {
+  die_if_NULL( cache );
+
+  node_t *from_node = lookup_hash_entry( cache->node_table, &from ); 
+  node_t *to_node = lookup_hash_entry( cache->node_table, &to ); 
+  if ( from_node == NULL || to_node == NULL ) {
+    error( "%s : not found.\n", __func__ );
+    return NULL;
+  }
+
+  link_t *link = ( link_t * )malloc( sizeof( link_t ) );
+  die_if_NULL( link );
+  
+  memset( link, 0, sizeof( link_t ) );
+  link->id = id;
+  link->from = from;
+  link->from_port = from_port;
+  link->to = to;
+  link->to_port = to_port;
+  link->data = data;
+
+  if ( lookup_hash_entry( cache->link_table, &link->id ) != NULL ) {
+    error( "%s : Link (id=0x%lx) exists.", __func__ );
+    return NULL;
+  }
+  insert_hash_entry( cache->link_table, &link->id, link );
+
+  insert_before_dlist( from_node->out_links, link );
+  insert_before_dlist( to_node->in_links, link );
+
+  return link;
+}
+
+
+void
+del_link_from_cache( topology_cache_t *cache, uint64_t id ) {
+  die_if_NULL( cache );
+
+  link_t *link = delete_hash_entry( cache->link_table, &id );
+  if ( link == NULL ) {
+    return;
+  }
+
+  node_t *from_node = lookup_hash_entry( cache->node_table, &link->from );
+  if ( from_node != NULL ) {
+    delete_dlist_element( find_element( from_node->out_links, link ) );
+  }
+
+  node_t *to_node = lookup_hash_entry( cache->node_table, &link->to );
+  if ( to_node != NULL ) {
+    delete_dlist_element( find_element( to_node->in_links, link ) );
+  }
+  
+  memset( link, 0, sizeof( link_t ) );
+  free( link );
+  
+  return;
 }
 
 
@@ -78,60 +198,6 @@ hash_link( const void *value ) {
   const link_t *link = ( const link_t * )value;
 
   return hash_datapath_id( &link->id );
-}
-
-
-topology_cache_t *
-create_topology_cache() {
-  topology_cache_t *cache = ( topology_cache_t * )malloc( sizeof( topology_cache_t ) );
-  if ( cache == NULL ) {
-    return NULL;
-  }
-
-  memset( cache, 0, sizeof( topology_cache_t ) );
-  cache->node_hash = create_hash( compare_hash_node, hash_node );
-  cache->link_hash = create_hash( compare_hash_link, hash_link );
-  
-  return cache;
-}
-
-
-bool 
-destroy_topology_cache( topology_cache_t *cache ) {
-  UNUSED( cache );
-  return true;
-}
-
-
-bool 
-add_node_to_cache( topology_cache_t *cache, node_t node ) {
-  UNUSED( cache );
-  UNUSED( node );
-  return true;
-}
-
-
-bool 
-del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id ) {
-  UNUSED( cache );
-  UNUSED( datapath_id );
-  return true;
-}
-
-
-bool 
-add_link_to_cache( topology_cache_t *cache, link_t link ) {
-  UNUSED( cache );
-  UNUSED( link );
-  return true;
-}
-
-
-bool 
-del_link_from_cache( topology_cache_t *cache, uint64_t id ) {
-  UNUSED( cache );
-  UNUSED( id );
-  return true;
 }
 
 

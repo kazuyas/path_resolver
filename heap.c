@@ -17,6 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+
 #include <sys/types.h>
 #include <stdlib.h>
 #include "trema.h"
@@ -232,3 +233,10 @@ swap_in_heap( heap_t *heap, int i, int j ) {
   set_index( heap, heap->elements[ j ], j );
 }
 
+
+/*
+ * Local variables:
+ * c-basic-offset: 2
+ * indent-tabs-mode: nil
+ * End:
+ */

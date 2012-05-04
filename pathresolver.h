@@ -24,35 +24,36 @@
 
 typedef struct {
   uint64_t datapath_id;
-  dlist_element *ingress_links;
-  dlist_element *egress_links;
+  dlist_element *in_links;
+  dlist_element *out_links;
   void *data;
 } node_t;
 
 
 typedef struct {
   uint64_t id;
-  node_t *from;
-  node_t *to;
+  uint64_t from;
+  uint16_t from_port;
+  uint64_t to;
+  uint16_t to_port;
   void *data;
 } link_t;
 
 
 typedef struct {
-  hash_table *node_hash;
-  hash_table *link_hash;
+  hash_table *node_table;
+  hash_table *link_table;
 } topology_cache_t;
 
 
 topology_cache_t *create_topology_cache();
-bool destroy_topology_cache( topology_cache_t *cache );
+void destroy_topology_cache( topology_cache_t *cache );
 
-bool add_node_to_cache( topology_cache_t *cache, node_t node );
-bool del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id );
-bool add_link_to_cache( topology_cache_t *cache, link_t link );
-bool del_link_from_cache( topology_cache_t *cache, uint64_t id );
+node_t *add_node_to_cache( topology_cache_t *cache, uint64_t datapath_id, void *data );
+void del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id );
+link_t *add_link_to_cache( topology_cache_t *cache, uint64_t id, uint64_t from, uint16_t from_port, uint64_t to, uint16_t to_port, void *data );
+void del_link_from_cache( topology_cache_t *cache, uint64_t id );
 
-void set_index_for_node( void *value, int index );
 int compare_heap_node( const void *value1, const void *value2 );
 bool compare_hash_node( const void *value1, const void *value2 );
 unsigned int hash_node( const void *value );
