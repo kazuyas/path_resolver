@@ -29,8 +29,17 @@ set_index_for_node( void *value, int index ) {
 }
 
 
+int
+compare_heap_node( const void *value1, const void *value2 ) {
+  const node_t *node1 = ( const node_t * )value1;
+  const node_t *node2 = ( const node_t * )value2;
+
+  return compare_heap_uint64( &node1->datapath_id, &node2->datapath_id );
+}
+
+
 bool
-compare_node( const void *value1, const void *value2 ) {
+compare_hash_node( const void *value1, const void *value2 ) {
   const node_t *node1 = ( const node_t * )value1;
   const node_t *node2 = ( const node_t * )value2;
 
@@ -46,12 +55,21 @@ hash_node( const void *value ) {
 }
 
 
-bool
-compare_link( const void *value1, const void *value2 ) {
+int
+compare_heap_link( const void *value1, const void *value2 ) {
   const link_t *link1 = ( const link_t * )value1;
   const link_t *link2 = ( const link_t * )value2;
 
-  return compare_datapath_id( &link1->id, &link2->id );
+  return compare_heap_uint64( &link1->id, &link2->id );
+}
+
+
+bool
+compare_hash_link( const void *value1, const void *value2 ) {
+  const link_t *link1 = ( const link_t * )value1;
+  const link_t *link2 = ( const link_t * )value2;
+
+  return compare_heap_uint64( &link1->id, &link2->id );
 }
 
 
@@ -71,8 +89,8 @@ create_topology_cache() {
   }
 
   memset( cache, 0, sizeof( topology_cache_t ) );
-  cache->node_hash = create_hash( compare_node, hash_node );
-  cache->link_hash = create_hash( compare_link, hash_link );
+  cache->node_hash = create_hash( compare_hash_node, hash_node );
+  cache->link_hash = create_hash( compare_hash_link, hash_link );
   
   return cache;
 }

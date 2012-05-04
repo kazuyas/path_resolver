@@ -14,7 +14,7 @@ CFLAGS = $(shell $(TREMA)/trema-config --cflags) -g -std=gnu99 -D_GNU_SOURCE -fn
 LDFLAGS = $(shell $(TREMA)/trema-config --libs) 
 
 TARGET = libpathresolver.a
-SRCS = heap.c topology_cache.c
+SRCS = heap.c topology_cache.c utility.c
 OBJS = $(SRCS:.c=.o)
 
 FEATURES = path_resolver.feature

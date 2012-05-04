@@ -53,10 +53,17 @@ bool add_link_to_cache( topology_cache_t *cache, link_t link );
 bool del_link_from_cache( topology_cache_t *cache, uint64_t id );
 
 void set_index_for_node( void *value, int index );
-bool compare_node( const void *value1, const void *value2 );
+int compare_heap_node( const void *value1, const void *value2 );
+bool compare_hash_node( const void *value1, const void *value2 );
 unsigned int hash_node( const void *value );
-bool compare_link( const void *value1, const void *value2 );
+int compare_heap_link( const void *value1, const void *value2 );
+bool compare_hash_link( const void *value1, const void *value2 );
 unsigned int hash_link( const void *value );
+
+int compare_heap_uint64( const void *value1, const void *value2 );
+int compare_heap_uint32( const void *value1, const void *value2 );
+int compare_heap_uint16( const void *value1, const void *value2 );
+int compare_heap_uint8( const void *value1, const void *value2 );
 
 
 #endif // LIBPATHRESOLVER_H

@@ -32,7 +32,7 @@ static void swap_in_heap( heap_t *heap, int i, int j );
 
 
 heap_t *
-create_heap( const compare_function compare, const set_index_function set_index, const size_t capacity ) {
+create_heap( const compare_heap_function compare, const set_index_function set_index, const size_t capacity ) {
   heap_t *heap = ( heap_t * )malloc( sizeof( heap_t ) );
   if ( heap == NULL ) {
     return NULL;
@@ -79,7 +79,7 @@ push_to_heap( heap_t *heap, void *value ) {
   heap->elements[ size ] = value;
   heap->size++;
 
-  ( *heap->set_index )( value, ( int )size );
+  set_index( heap, value, ( int )size );
   move_up( heap, ( int )size );
   
   return true;  
@@ -124,7 +124,7 @@ check_heap( heap_t *heap ) {
     void *parent = heap->elements[ p ];
     void *child = heap->elements[ c ];
 
-    if ( ( *heap->compare )( parent, child ) ) {
+    if ( ( *heap->compare )( parent, child ) < 0 ) {
       return false;
     }
   }
@@ -144,9 +144,8 @@ move_up( heap_t *heap, int index ) {
     void *child = heap->elements[ c_index ];
     void *parent = heap->elements[ p_index ];
 
-    if ( ( *heap->compare )( parent, child ) == false ) {
+    if ( ( *heap->compare )( parent, child ) <= 0 ) 
       break;
-    }
 
     swap_in_heap( heap, p_index, c_index );
     c_index = p_index;
@@ -165,12 +164,11 @@ move_down( heap_t *heap, int index ) {
     void *child = heap->elements[ c_index ];
     void *parent = heap->elements[ p_index ];
     
-    if ( ( *heap->compare )( parent, child ) <= 0 ) {
+    if ( ( *heap->compare )( parent, child ) <= 0 ) 
       break;
-    }
 
     swap_in_heap( heap, p_index, c_index );
-    c_index = p_index;
+    p_index = c_index;
   }
 }
 

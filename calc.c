@@ -17,33 +17,28 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
-#ifndef HEAP_H
-#define HEAP_H
-
-
-typedef int ( *compare_heap_function )( const void *value1, const void *value2 );
-typedef void ( *set_index_function )( void *value, int index );
+#include "trema.h"
 
 
 typedef struct {
-  void **elements;
-  size_t capacity;
-  size_t size;
-  set_index_function set_index;
-  compare_heap_function compare;
-} heap_t;
+  hash_table node_hash;
+  
+} tree_t;
 
 
-heap_t *create_heap( const compare_heap_function compare, const set_index_function set_index, const size_t capacity );
-void destroy_heap( heap_t *heap );
-bool push_to_heap( heap_t *heap, void *value );
-void *pop_from_heap( heap_t *heap );
-void *remove_from_heap( heap_t *heap, int index );
-bool check_heap( heap_t *heap );
+tree_t *
+calc_spt( const uint64_t root, const topology_cache *cache ) {
+  if ( cache == NULL ) {
+    return NULL;
+  }
 
-#endif // HEAP_H
-
+  node_t *root_node = lookup_hash_entry( cache->node_hash, &root );
+  if ( root_node == NULL ) {
+    return NULL;
+  }
+  
+  
+}
 
 /*
  * Local variables:
@@ -51,3 +46,8 @@ bool check_heap( heap_t *heap );
  * indent-tabs-mode: nil
  * End:
  */
+
+
+
+
+
