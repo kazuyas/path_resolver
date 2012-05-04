@@ -22,21 +22,19 @@
 #define HEAP_H
 
 
-typedef struct {
-  void ( *set_index )( void *value, int index );
-  int ( *compare )( void *value1, void *value2 );
-} heap_ops_t;
+typedef void ( *set_index_function )( void *value, int index );
 
 
 typedef struct {
   void **elements;
   size_t capacity;
   size_t size;
-  heap_ops_t *ops;
+  set_index_function set_index;
+  compare_function compare;
 } heap_t;
 
 
-heap_t *create_heap( size_t capacity, heap_ops_t *ops );
+heap_t *create_heap( const compare_function compare, const set_index_function set_index, const size_t capacity );
 void destroy_heap( heap_t *heap );
 bool push_to_heap( heap_t *heap, void *value );
 void *pop_from_heap( heap_t *heap );

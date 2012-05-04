@@ -32,11 +32,7 @@ static void swap_in_heap( heap_t *heap, int i, int j );
 
 
 heap_t *
-create_heap( size_t capacity, heap_ops_t *ops ) {
-  if ( ops == NULL || ops->compare == NULL ) {
-    return NULL;
-  }
-  
+create_heap( const compare_function compare, const set_index_function set_index, const size_t capacity ) {
   heap_t *heap = ( heap_t * )malloc( sizeof( heap_t ) );
   if ( heap == NULL ) {
     return NULL;
@@ -45,7 +41,8 @@ create_heap( size_t capacity, heap_ops_t *ops ) {
   heap->capacity = capacity;
   heap->size = 0;
   heap->elements = ( void ** )malloc( sizeof( void * ) * capacity );
-  heap->ops = ops;
+  heap->compare = compare;
+  heap->set_index = set_index;
 
   if ( heap->elements == NULL ) {
     free( heap );
@@ -82,7 +79,7 @@ push_to_heap( heap_t *heap, void *value ) {
   heap->elements[ size ] = value;
   heap->size++;
 
-  set_index( heap, value, ( int )size );
+  ( *heap->set_index )( value, ( int )size );
   move_up( heap, ( int )size );
   
   return true;  
@@ -127,7 +124,7 @@ check_heap( heap_t *heap ) {
     void *parent = heap->elements[ p ];
     void *child = heap->elements[ c ];
 
-    if ( heap->ops->compare( parent, child ) > 0 ) {
+    if ( ( *heap->compare )( parent, child ) ) {
       return false;
     }
   }
@@ -147,7 +144,7 @@ move_up( heap_t *heap, int index ) {
     void *child = heap->elements[ c_index ];
     void *parent = heap->elements[ p_index ];
 
-    if ( heap->ops->compare( parent, child ) <= 0 ) {
+    if ( ( *heap->compare )( parent, child ) == false ) {
       break;
     }
 
@@ -168,7 +165,7 @@ move_down( heap_t *heap, int index ) {
     void *child = heap->elements[ c_index ];
     void *parent = heap->elements[ p_index ];
     
-    if ( heap->ops->compare( parent, child ) <= 0 ) {
+    if ( ( *heap->compare )( parent, child ) <= 0 ) {
       break;
     }
 
@@ -180,8 +177,8 @@ move_down( heap_t *heap, int index ) {
 
 static void 
 set_index( heap_t *heap, void *value, int index ) {
-  if ( heap->ops->set_index != NULL ) {
-    heap->ops->set_index( value, index );
+  if ( heap->set_index != NULL ) {
+    ( *heap->set_index )( value, index );
   }
 }
 
@@ -219,7 +216,7 @@ min_child_of( heap_t *heap, int p_index ) {
   void *left = heap->elements[ l_index ];
   void *right = heap->elements[ r_index ];
 
-  if ( heap->ops->compare( left, right ) <= 0 ) {
+  if ( ( *heap->compare )( left, right ) <= 0 ) {
     return l_index;
   } else {
     return r_index;

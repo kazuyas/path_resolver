@@ -39,21 +39,24 @@ typedef struct {
 
 
 typedef struct {
-  hash_table node_hash;
-  hash_table link_hash;
+  hash_table *node_hash;
+  hash_table *link_hash;
 } topology_cache_t;
 
 
 topology_cache_t *create_topology_cache();
-bool destroy_topology_cache( topology_cache *cache );
+bool destroy_topology_cache( topology_cache_t *cache );
 
-bool add_node_to_cache( topology_cache *cache, node_t node );
-bool del_node_from_cache( topology_cache *cache, uint64_t datapath_id );
-bool add_link_to_cache( topology_cache *cache, link_t link );
-bool del_link_from_cache( topology_cache *cache, uint64_t id );
+bool add_node_to_cache( topology_cache_t *cache, node_t node );
+bool del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id );
+bool add_link_to_cache( topology_cache_t *cache, link_t link );
+bool del_link_from_cache( topology_cache_t *cache, uint64_t id );
 
-void *set_index_for_node( void *value, int index );
-int *compare_node( void *value1, void *value2 );
+void set_index_for_node( void *value, int index );
+bool compare_node( const void *value1, const void *value2 );
+unsigned int hash_node( const void *value );
+bool compare_link( const void *value1, const void *value2 );
+unsigned int hash_link( const void *value );
 
 
 #endif // LIBPATHRESOLVER_H
