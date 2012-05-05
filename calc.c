@@ -22,16 +22,14 @@
 #include "pathresolver.h"
 
 
-static void calculate( tree_t *tree, const topology_cache_t *cache );
+static void calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );
 static void add_node_to_tree( tree_t *tree, node_t *node );
 static void add_link_to_tree( tree_t *tree, link_t *link );
 
 
 tree_t *
-create_tree( const uint64_t root, const topology_cache_t *cache ) {
-  if ( cache == NULL ) {
-    return NULL;
-  }
+create_tree( const topology_cache_t *cache, const uint64_t root, const hash_table *costmap ) {
+  die_if_NULL( cache );
 
   tree_t *tree = ( tree_t * )malloc( sizeof( tree_t ) );
   if ( tree == NULL ) {
@@ -44,7 +42,7 @@ create_tree( const uint64_t root, const topology_cache_t *cache ) {
   tree->node_num = 0;
   tree->link_num = 0;
 
-  calculate( tree, cache );
+  calculate( tree, cache, costmap );
 
   return tree;
 }
@@ -52,6 +50,7 @@ create_tree( const uint64_t root, const topology_cache_t *cache ) {
 
 void
 destroy_tree( tree_t *tree ) {
+  die_if_NULL( tree );
   hash_iterator iter;
   hash_entry *entry;
 
@@ -121,7 +120,8 @@ destroy_path( list_element *path ) {
 
 
 static void
-calculate( tree_t *tree, const topology_cache_t *cache ) {
+calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap ) {
+  UNUSED( costmap );
   heap_t *heap = create_heap( compare_heap_link, cache->link_num );
   die_if_NULL( heap );
 

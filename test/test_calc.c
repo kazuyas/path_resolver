@@ -14,7 +14,7 @@ main() {
   add_link_to_cache( cache, 0x3, 0x2, 0x3, 0x3, 0x1, NULL );
   add_link_to_cache( cache, 0x4, 0x3, 0x2, 0x2, 0x4, NULL );
 
-  tree_t *tree = create_tree( 0x1, cache );
+  tree_t *tree = create_tree( cache, 0x1, NULL );
   list_element *path = resolve_path_from_tree( tree, 0x3 );
 
   list_element *current;
