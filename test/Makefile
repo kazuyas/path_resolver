@@ -13,8 +13,8 @@ RANLIB = ranlib
 CFLAGS = $(shell $(TREMA)/trema-config --cflags) -g -std=gnu99 -D_GNU_SOURCE -fno-strict-aliasing -Werror -Wall -Wextra -Wformat=2 -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wfloat-equal -Wpointer-arith -I..
 LDFLAGS = -L.. -lpathresolver $(shell $(TREMA)/trema-config --libs) 
 
-TARGET = test_heap
-SRCS = test_heap.c
+TARGET = test_calc
+SRCS = test_calc.c
 OBJS = $(SRCS:.c=.o)
 
 FEATURES = path_resolver.feature
