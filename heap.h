@@ -23,19 +23,17 @@
 
 
 typedef int ( *compare_heap_function )( const void *value1, const void *value2 );
-typedef void ( *set_index_function )( void *value, int index );
 
 
 typedef struct {
   void **elements;
-  size_t capacity;
   size_t size;
-  set_index_function set_index;
+  size_t element_num;
   compare_heap_function compare;
 } heap_t;
 
 
-heap_t *create_heap( const compare_heap_function compare, const set_index_function set_index, const size_t capacity );
+heap_t *create_heap( const compare_heap_function compare, const size_t size );
 void destroy_heap( heap_t *heap );
 bool push_to_heap( heap_t *heap, void *value );
 void *pop_from_heap( heap_t *heap );

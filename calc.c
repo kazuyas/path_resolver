@@ -17,6 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+
 #include "trema.h"
 #include "pathresolver.h"
 
@@ -89,7 +90,7 @@ destroy_path( list_element *path ) {
 
 static void
 calculate( tree_t *tree, const topology_cache_t *cache ) {
-  heap_t *heap = create_heap( compare_heap_link, NULL, cache->link_num );
+  heap_t *heap = create_heap( compare_heap_link, cache->link_num );
   die_if_NULL( heap );
 
   node_t *from_node = lookup_hash_entry( cache->node_table, &tree->root_dpid );
