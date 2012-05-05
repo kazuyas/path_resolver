@@ -146,6 +146,11 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
     node_t *candidate_node;
     for ( ;; ) {
       candidate_link = pop_from_heap( heap );
+      if ( candidate_link == NULL ) { // REVISIT
+        error( "Not found." );
+        destroy_heap( heap );
+        return;
+      }
       candidate_node = lookup_hash_entry( tree->node_table,
                                           &candidate_link->to );
       if ( candidate_node == NULL ) {
