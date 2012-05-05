@@ -160,6 +160,8 @@ calculate( tree_t *tree, const topology_cache_t *cache ) {
     // Prepare for next routine
     from_node = node;
   }
+
+  destroy_heap( heap );
 }
 
 

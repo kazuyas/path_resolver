@@ -23,5 +23,7 @@ main() {
     printf( "dpid = 0x%lx, port = 0x%x\n", hop->datapath_id, hop->out_port );
   }
 
+  destroy_path( path );
   destroy_tree( tree );
+  destroy_topology_cache( cache );
 }

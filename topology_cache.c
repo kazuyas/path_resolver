@@ -41,7 +41,29 @@ void
 destroy_topology_cache( topology_cache_t *cache ) {
   die_if_NULL( cache );
 
+  hash_iterator iter;
+  hash_entry *entry;
+
+  init_hash_iterator( cache->node_table, &iter );
+  while ( ( entry = iterate_hash_next( &iter ) ) != NULL ) {
+    node_t *node = entry->value;
+    delete_dlist( node->in_links );
+    delete_dlist( node->out_links );
+    memset( node, 0, sizeof( node_t ) );
+    free( node );
+
+    delete_hash_entry( cache->node_table, &entry->key );
+  }
   delete_hash( cache->node_table );
+
+  init_hash_iterator( cache->link_table, &iter );
+  while ( ( entry = iterate_hash_next( &iter ) ) != NULL ) {
+    link_t *link = entry->value;
+    memset( link, 0, sizeof( link_t ) );
+    free( link );
+
+    delete_hash_entry( cache->link_table, &entry->key );
+  }
   delete_hash( cache->link_table );
 
   memset( cache, 0, sizeof( topology_cache_t ) );
