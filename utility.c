@@ -30,7 +30,7 @@ compare_heap_uint64( const void *value1, const void *value2 ) {
 
   if ( l1 == l2 ) {
     return 0;
-  } 
+  }
 
   return ( l1 < l2 ) ? -1 : 1;
 }
@@ -43,7 +43,7 @@ compare_heap_uint32( const void *value1, const void *value2 ) {
 
   if ( l1 == l2 ) {
     return 0;
-  } 
+  }
 
   return ( l1 < l2 ) ? -1 : 1;
 }

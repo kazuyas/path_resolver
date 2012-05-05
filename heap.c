@@ -52,7 +52,7 @@ create_heap( const compare_heap_function compare, const size_t size ) {
 }
 
 
-void 
+void
 destroy_heap( heap_t *heap ) {
   if ( heap == NULL ) {
     return;
@@ -79,8 +79,8 @@ push_to_heap( heap_t *heap, void *value ) {
   heap->element_num++;
 
   move_up( heap, ( int )element_num );
-  
-  return true;  
+
+  return true;
 }
 
 
@@ -101,7 +101,7 @@ remove_from_heap( heap_t *heap, int index ) {
 
   if ( ( size_t )index != heap->element_num ) {
     heap->elements[ index ] = heap->elements[ heap->element_num ];
-    move_down( heap, index );    
+    move_down( heap, index );
   }
 
   heap->elements[ heap->element_num ] = NULL;
@@ -129,7 +129,7 @@ check_heap( heap_t *heap ) {
 }
 
 
-static void 
+static void
 move_up( heap_t *heap, int index ) {
   int c_index = index;
 
@@ -140,7 +140,7 @@ move_up( heap_t *heap, int index ) {
     void *child = heap->elements[ c_index ];
     void *parent = heap->elements[ p_index ];
 
-    if ( ( *heap->compare )( parent, child ) <= 0 ) 
+    if ( ( *heap->compare )( parent, child ) <= 0 )
       break;
 
     swap_in_heap( heap, p_index, c_index );
@@ -149,18 +149,18 @@ move_up( heap_t *heap, int index ) {
 }
 
 
-static void 
+static void
 move_down( heap_t *heap, int index ) {
   int p_index = index;
-  
+
   for (;;) {
     int c_index = min_child_of( heap, p_index );
     if ( c_index < 0 ) return;
 
     void *child = heap->elements[ c_index ];
     void *parent = heap->elements[ p_index ];
-    
-    if ( ( *heap->compare )( parent, child ) <= 0 ) 
+
+    if ( ( *heap->compare )( parent, child ) <= 0 )
       break;
 
     swap_in_heap( heap, p_index, c_index );
@@ -169,22 +169,22 @@ move_down( heap_t *heap, int index ) {
 }
 
 
-static int 
+static int
 parent_of( int c_index ) {
   if ( c_index <= 0 ) {
     return -1;
-  } 
-  
+  }
+
   return ( c_index - 1 ) / 2;
 }
 
 
-static int 
+static int
 min_child_of( heap_t *heap, int p_index ) {
   if ( p_index < 0 ) {
     return -1;
   }
- 
+
   int l_index = p_index * 2 + 1;
   int r_index = l_index + 1;
   if ( l_index < 0 ) {
@@ -193,7 +193,7 @@ min_child_of( heap_t *heap, int p_index ) {
 
   if ( ( size_t )l_index >= heap->element_num ) {
     return -1;
-  } 
+  }
 
   if ( ( size_t )r_index >= heap->element_num ) {
     return l_index;

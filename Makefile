@@ -11,7 +11,7 @@ AR = ar
 RANLIB = ranlib
 
 CFLAGS = $(shell $(TREMA)/trema-config --cflags) -g -std=gnu99 -D_GNU_SOURCE -fno-strict-aliasing -Werror -Wall -Wextra -Wformat=2 -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wfloat-equal -Wpointer-arith
-LDFLAGS = $(shell $(TREMA)/trema-config --libs) 
+LDFLAGS = $(shell $(TREMA)/trema-config --libs)
 
 TARGET = libpathresolver.a
 SRCS = heap.c topology_cache.c utility.c calc.c
@@ -34,7 +34,7 @@ $(TARGET): $(OBJS)
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
-depend: 
+depend:
 	$(CC) -MM $(CFLAGS) $(SRCS) > $(DEPENDS)
 
 clean:

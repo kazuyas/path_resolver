@@ -37,7 +37,7 @@ create_tree( const uint64_t root, const topology_cache_t *cache ) {
   if ( tree == NULL ) {
     return NULL;
   }
-  
+
   tree->root_dpid = root;
   tree->node_table = create_hash( compare_hash_node, hash_node );
   tree->link_table = create_hash( compare_hash_link, hash_link );
@@ -45,7 +45,7 @@ create_tree( const uint64_t root, const topology_cache_t *cache ) {
   tree->link_num = 0;
 
   calculate( tree, cache );
-    
+
   return tree;
 }
 
@@ -68,9 +68,9 @@ resolve_path_from_tree( tree_t *tree, uint64_t to ) {
     hop_t *hop = ( hop_t * )malloc( sizeof( hop_t ) );
     hop->datapath_id = link->from;
     hop->out_port = link->from_port;
-    
+
     append_to_tail( &path, hop );
-    
+
     current = link->from;
   }
 
@@ -96,7 +96,7 @@ calculate( tree_t *tree, const topology_cache_t *cache ) {
   node_t *from_node = lookup_hash_entry( cache->node_table, &tree->root_dpid );
   die_if_NULL( from_node );
   add_node_to_tree( tree, from_node );
-  
+
   for ( ; tree->node_num < cache->node_num; ) {
 
     // Update phase
@@ -108,7 +108,7 @@ calculate( tree_t *tree, const topology_cache_t *cache ) {
     }
 
     // Selection phase
-    link_t *candidate_link; 
+    link_t *candidate_link;
     node_t *candidate_node;
     for ( ;; ) {
       candidate_link = pop_from_heap( heap );
@@ -168,11 +168,11 @@ add_link_to_tree( tree_t *tree, link_t *link ) {
   }
   insert_hash_entry( tree->link_table, &treelink->id, treelink );
 
-  node_t *from_node = lookup_hash_entry( tree->node_table, &treelink->from ); 
+  node_t *from_node = lookup_hash_entry( tree->node_table, &treelink->from );
   die_if_NULL( from_node );
   insert_before_dlist( from_node->out_links, treelink );
 
-  node_t *to_node = lookup_hash_entry( tree->node_table, &treelink->to ); 
+  node_t *to_node = lookup_hash_entry( tree->node_table, &treelink->to );
   die_if_NULL( to_node );
   insert_before_dlist( to_node->in_links, treelink );
 

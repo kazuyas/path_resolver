@@ -54,7 +54,7 @@ destroy_topology_cache( topology_cache_t *cache ) {
 node_t *
 add_node_to_cache( topology_cache_t *cache, uint64_t datapath_id, void *data ) {
   die_if_NULL( cache );
-  
+
   node_t *node = ( node_t * )malloc( sizeof( node_t ) );
   die_if_NULL( node );
 
@@ -71,7 +71,7 @@ add_node_to_cache( topology_cache_t *cache, uint64_t datapath_id, void *data ) {
   }
   insert_hash_entry( cache->node_table, &node->datapath_id, node );
   cache->node_num++;
-  
+
   return node;
 }
 
@@ -97,8 +97,8 @@ link_t *
 add_link_to_cache( topology_cache_t *cache, uint64_t id, uint64_t from, uint16_t from_port, uint64_t to, uint16_t to_port, void *data ) {
   die_if_NULL( cache );
 
-  node_t *from_node = lookup_hash_entry( cache->node_table, &from ); 
-  node_t *to_node = lookup_hash_entry( cache->node_table, &to ); 
+  node_t *from_node = lookup_hash_entry( cache->node_table, &from );
+  node_t *to_node = lookup_hash_entry( cache->node_table, &to );
   if ( from_node == NULL || to_node == NULL ) {
     error( "%s : not found.\n", __func__ );
     return NULL;
@@ -106,7 +106,7 @@ add_link_to_cache( topology_cache_t *cache, uint64_t id, uint64_t from, uint16_t
 
   link_t *link = ( link_t * )malloc( sizeof( link_t ) );
   die_if_NULL( link );
-  
+
   memset( link, 0, sizeof( link_t ) );
   link->id = id;
   link->from = from;
@@ -148,7 +148,7 @@ del_link_from_cache( topology_cache_t *cache, uint64_t id ) {
   if ( to_node != NULL ) {
     delete_dlist_element( find_element( to_node->in_links, link ) );
   }
-  
+
   memset( link, 0, sizeof( link_t ) );
   free( link );
 
