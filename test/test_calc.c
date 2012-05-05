@@ -22,4 +22,6 @@ main() {
     hop_t *hop = current->data;
     printf( "dpid = 0x%lx, port = 0x%x\n", hop->datapath_id, hop->out_port );
   }
+
+  destroy_tree( tree );
 }

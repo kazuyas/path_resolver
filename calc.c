@@ -50,6 +50,38 @@ create_tree( const uint64_t root, const topology_cache_t *cache ) {
 }
 
 
+void
+destroy_tree( tree_t *tree ) {
+  hash_iterator iter;
+  hash_entry *entry;
+
+  init_hash_iterator( tree->node_table, &iter );
+  while ( ( entry = iterate_hash_next( &iter ) ) != NULL ) {
+    node_t *node = entry->value;
+    delete_dlist( node->in_links );
+    delete_dlist( node->out_links );
+    memset( node, 0, sizeof( node_t ) );
+    free( node );
+
+    delete_hash_entry( tree->node_table, &entry->key );
+  }
+  delete_hash( tree->node_table );
+
+  init_hash_iterator( tree->link_table, &iter );
+  while ( ( entry = iterate_hash_next( &iter ) ) != NULL ) {
+    link_t *link = entry->value;
+    memset( link, 0, sizeof( link_t ) );
+    free( link );
+
+    delete_hash_entry( tree->link_table, &entry->key );
+  }
+  delete_hash( tree->link_table );
+
+  memset( tree, 0, sizeof( tree_t ) );
+  free( tree );
+}
+
+
 list_element *
 resolve_path_from_tree( const tree_t *tree, const uint64_t to ) {
   list_element *path;
