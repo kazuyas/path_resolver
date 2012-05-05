@@ -18,8 +18,8 @@
  */
 
 
-#ifndef LIBPATHRESOLVER_H
-#define LIBPATHRESOLVER_H
+#ifndef PATHRESOLVER_H
+#define PATHRESOLVER_H
 
 
 #include "heap.h"
@@ -68,16 +68,17 @@ typedef struct {
 
 tree_t *create_tree( const uint64_t root, const topology_cache_t *cache );
 void destroy_tree( tree_t *tree );
-list_element *resolve_path_from_tree( tree_t *tree, uint64_t to );
+list_element *resolve_path_from_tree( const tree_t *tree, const uint64_t to );
 void destroy_path( list_element *path );
 
 topology_cache_t *create_topology_cache();
 void destroy_topology_cache( topology_cache_t *cache );
 
-node_t *add_node_to_cache( topology_cache_t *cache, uint64_t datapath_id, void *data );
-void del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id );
-link_t *add_link_to_cache( topology_cache_t *cache, uint64_t id, uint64_t from, uint16_t from_port, uint64_t to, uint16_t to_port, void *data );
-void del_link_from_cache( topology_cache_t *cache, uint64_t id );
+node_t *add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, void *data );
+void del_node_from_cache( topology_cache_t *cache, const uint64_t datapath_id );
+link_t *add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port, void *data );
+void del_link_from_cache( topology_cache_t *cache, const uint64_t id );
+
 
 int compare_heap_node( const void *value1, const void *value2 );
 bool compare_hash_node( const void *value1, const void *value2 );
@@ -92,7 +93,7 @@ int compare_heap_uint16( const void *value1, const void *value2 );
 int compare_heap_uint8( const void *value1, const void *value2 );
 
 
-#endif // LIBPATHRESOLVER_H
+#endif // PATHRESOLVER_H
 
 /*
  * Local variables:

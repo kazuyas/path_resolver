@@ -52,7 +52,7 @@ destroy_topology_cache( topology_cache_t *cache ) {
 
 
 node_t *
-add_node_to_cache( topology_cache_t *cache, uint64_t datapath_id, void *data ) {
+add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, void *data ) {
   die_if_NULL( cache );
 
   node_t *node = ( node_t * )malloc( sizeof( node_t ) );
@@ -77,7 +77,7 @@ add_node_to_cache( topology_cache_t *cache, uint64_t datapath_id, void *data ) {
 
 
 void
-del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id ) {
+del_node_from_cache( topology_cache_t *cache, const uint64_t datapath_id ) {
   die_if_NULL( cache );
 
   node_t *node = delete_hash_entry( cache->node_table, &datapath_id );
@@ -94,7 +94,7 @@ del_node_from_cache( topology_cache_t *cache, uint64_t datapath_id ) {
 
 
 link_t *
-add_link_to_cache( topology_cache_t *cache, uint64_t id, uint64_t from, uint16_t from_port, uint64_t to, uint16_t to_port, void *data ) {
+add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port, void *data ) {
   die_if_NULL( cache );
 
   node_t *from_node = lookup_hash_entry( cache->node_table, &from );
@@ -131,7 +131,7 @@ add_link_to_cache( topology_cache_t *cache, uint64_t id, uint64_t from, uint16_t
 
 
 void
-del_link_from_cache( topology_cache_t *cache, uint64_t id ) {
+del_link_from_cache( topology_cache_t *cache, const uint64_t id ) {
   die_if_NULL( cache );
 
   link_t *link = delete_hash_entry( cache->link_table, &id );

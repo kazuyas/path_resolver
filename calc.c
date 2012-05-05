@@ -51,7 +51,7 @@ create_tree( const uint64_t root, const topology_cache_t *cache ) {
 
 
 list_element *
-resolve_path_from_tree( tree_t *tree, uint64_t to ) {
+resolve_path_from_tree( const tree_t *tree, const uint64_t to ) {
   list_element *path;
   create_list( &path );
 
