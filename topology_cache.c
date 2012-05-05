@@ -180,15 +180,6 @@ del_link_from_cache( topology_cache_t *cache, const uint64_t id ) {
 }
 
 
-int
-compare_heap_node( const void *value1, const void *value2 ) {
-  const node_t *node1 = ( const node_t * )value1;
-  const node_t *node2 = ( const node_t * )value2;
-
-  return compare_heap_uint64( &node1->datapath_id, &node2->datapath_id );
-}
-
-
 bool
 compare_hash_node( const void *value1, const void *value2 ) {
   const node_t *node1 = ( const node_t * )value1;
@@ -211,7 +202,7 @@ compare_heap_link( const void *value1, const void *value2 ) {
   const link_t *link1 = ( const link_t * )value1;
   const link_t *link2 = ( const link_t * )value2;
 
-  return compare_heap_uint64( &link1->id, &link2->id );
+  return compare_heap_uint64( &link1->total_cost, &link2->total_cost );
 }
 
 

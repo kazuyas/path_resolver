@@ -128,15 +128,17 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
   node_t *from_node = lookup_hash_entry( cache->node_table, &tree->root_dpid );
   die_if_NULL( from_node );
   add_node_to_tree( tree, from_node );
+  uint16_t cost = 0;
 
   for ( ; tree->node_num < cache->node_num; ) {
-
     // Update phase
     dlist_element *element;
     for ( element = get_first_element( from_node->out_links );
-          element != NULL;
+          element != NULL && element->next != NULL; // REVISIT
           element = element->next ) {
-      push_to_heap( heap, ( link_t * )element->data );
+      link_t *link = ( link_t * )element->data;
+      push_to_heap( heap, link );
+      link->total_cost = ( uint16_t )( cost + 1 );
     }
 
     // Selection phase
@@ -158,6 +160,7 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
     add_link_to_tree( tree, candidate_link );
 
     // Prepare for next routine
+    cost = candidate_link->total_cost;
     from_node = node;
   }
 
