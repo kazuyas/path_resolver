@@ -68,7 +68,7 @@ typedef struct {
 
 tree_t *create_tree( const uint64_t root, const topology_cache_t *cache );
 void destroy_tree( tree_t *tree );
-list_element *resolve_path_from_tree( tree_t *tree, uint64_t from, uint64_t to );
+list_element *resolve_path_from_tree( tree_t *tree, uint64_t to );
 void destroy_path( list_element *path );
 
 topology_cache_t *create_topology_cache();

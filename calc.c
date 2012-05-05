@@ -50,12 +50,12 @@ create_tree( const uint64_t root, const topology_cache_t *cache ) {
 
 
 list_element *
-resolve_path_from_tree( tree_t *tree, uint64_t from, uint64_t to ) {
+resolve_path_from_tree( tree_t *tree, uint64_t to ) {
   list_element *path;
   create_list( &path );
 
   uint64_t current;
-  for ( current = to; current != from; ) {
+  for ( current = to; current != tree->root_dpid; ) {
     node_t *node = lookup_hash_entry( tree->node_table, &current );
     if ( node == NULL ) {
       return NULL;
@@ -97,6 +97,7 @@ calculate( tree_t *tree, const topology_cache_t *cache ) {
   add_node_to_tree( tree, from_node );
   
   for ( ; tree->node_num < cache->node_num; ) {
+
     // Update phase
     dlist_element *element;
     for ( element = get_first_element( from_node->out_links );
