@@ -61,8 +61,6 @@ destroy_tree( tree_t *tree ) {
     delete_dlist( node->out_links );
     memset( node, 0, sizeof( node_t ) );
     free( node );
-
-    delete_hash_entry( tree->node_table, &entry->key );
   }
   delete_hash( tree->node_table );
 
@@ -71,8 +69,6 @@ destroy_tree( tree_t *tree ) {
     link_t *link = entry->value;
     memset( link, 0, sizeof( link_t ) );
     free( link );
-
-    delete_hash_entry( tree->link_table, &entry->key );
   }
   delete_hash( tree->link_table );
 
