@@ -18,13 +18,14 @@
  */
 
 
+#include <assert.h>
 #include "trema.h"
 #include "pathresolver.h"
 
 
 static void calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );
-static void add_node_to_tree( tree_t *tree, node_t *node );
-static void add_link_to_tree( tree_t *tree, link_t *link );
+static void add_node_to_tree( tree_t *tree, node_t *treenode, node_t *node );
+static void add_link_to_tree( tree_t *tree, link_t *treelink, link_t *link );
 
 
 tree_t *
@@ -121,9 +122,14 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
   heap_t *heap = create_heap( compare_heap_link, cache->link_num );
   die_if_NULL( heap );
 
+  node_t *treenode = ( node_t * )malloc( sizeof( node_t ) * cache->node_num );
+  link_t *treelink = ( link_t * )malloc( sizeof( link_t ) * cache->node_num - 1);
+  unsigned int ncount = 0;
+  unsigned int lcount = 0;
+
   node_t *from_node = lookup_hash_entry( cache->node_table, &tree->root_dpid );
   die_if_NULL( from_node );
-  add_node_to_tree( tree, from_node );
+  add_node_to_tree( tree, &treenode[ ncount++ ], from_node );
   uint16_t cost = 0;
 
   for ( ; tree->node_num < cache->node_num; ) {
@@ -155,10 +161,12 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
     }
 
     // Add the candidate node into tree.
+    assert( ncount >= cache->node_num );
+    assert( lcount >= cache->node_num - 1 );
     node_t *node = lookup_hash_entry( cache->node_table,
                                       &candidate_link->to );
-    add_node_to_tree( tree, node );
-    add_link_to_tree( tree, candidate_link );
+    add_node_to_tree( tree, &treenode[ ncount++ ], node );
+    add_link_to_tree( tree, &treelink[ lcount++ ], candidate_link );
 
     // Prepare for next routine
     cost = candidate_link->total_cost;
@@ -170,11 +178,9 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
 
 
 static void
-add_node_to_tree( tree_t *tree, node_t *node ) {
+add_node_to_tree( tree_t *tree, node_t *treenode, node_t *node ) {
   die_if_NULL( tree );
   die_if_NULL( node );
-
-  node_t *treenode = ( node_t * )malloc( sizeof( node_t ) );
   die_if_NULL( treenode );
 
   treenode->datapath_id = node->datapath_id;
@@ -193,11 +199,9 @@ add_node_to_tree( tree_t *tree, node_t *node ) {
 
 
 static void
-add_link_to_tree( tree_t *tree, link_t *link ) {
+add_link_to_tree( tree_t *tree, link_t *treelink, link_t *link ) {
   die_if_NULL( tree );
   die_if_NULL( link );
-
-  link_t *treelink = ( link_t * )malloc( sizeof( link_t ) );
   die_if_NULL( treelink );
   memcpy( treelink, link, sizeof( link_t ) );
 
