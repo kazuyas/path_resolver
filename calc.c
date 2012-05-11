@@ -161,8 +161,8 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
     }
 
     // Add the candidate node into tree.
-    assert( ncount >= cache->node_num );
-    assert( lcount >= cache->node_num - 1 );
+    assert( ncount < cache->node_num );
+    assert( lcount < cache->node_num - 1 );
     node_t *node = lookup_hash_entry( cache->node_table,
                                       &candidate_link->to );
     add_node_to_tree( tree, &treenode[ ncount++ ], node );

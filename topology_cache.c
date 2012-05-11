@@ -207,7 +207,7 @@ compare_hash_link( const void *value1, const void *value2 ) {
   const link_t *link1 = ( const link_t * )value1;
   const link_t *link2 = ( const link_t * )value2;
 
-  return compare_heap_uint64( &link1->id, &link2->id );
+  return compare_datapath_id( &link1->id, &link2->id );
 }
 
 
