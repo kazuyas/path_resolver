@@ -40,6 +40,8 @@ create_tree( const topology_cache_t *cache, const uint64_t root, const hash_tabl
   tree->root_dpid = root;
   tree->node_table = create_hash( compare_hash_node, hash_node );
   tree->link_table = create_hash( compare_hash_link, hash_link );
+  tree->node = ( node_t * )malloc( sizeof( node_t ) * cache->node_num );
+  tree->link = ( link_t * )malloc( sizeof( link_t ) * cache->node_num - 1 );
   tree->node_num = 0;
   tree->link_num = 0;
 
@@ -52,26 +54,20 @@ create_tree( const topology_cache_t *cache, const uint64_t root, const hash_tabl
 void
 destroy_tree( tree_t *tree ) {
   die_if_NULL( tree );
-  hash_iterator iter;
-  hash_entry *entry;
 
-  init_hash_iterator( tree->node_table, &iter );
-  while ( ( entry = iterate_hash_next( &iter ) ) != NULL ) {
-    node_t *node = entry->value;
-    delete_dlist( node->in_links );
-    delete_dlist( node->out_links );
-    memset( node, 0, sizeof( node_t ) );
-    free( node );
+  for ( unsigned int i; i < tree->node_num; i++ ) {
+    delete_dlist( tree->node[ i ].in_links );
+    delete_dlist( tree->node[ i ].out_links );
   }
+
   delete_hash( tree->node_table );
-
-  init_hash_iterator( tree->link_table, &iter );
-  while ( ( entry = iterate_hash_next( &iter ) ) != NULL ) {
-    link_t *link = entry->value;
-    memset( link, 0, sizeof( link_t ) );
-    free( link );
-  }
   delete_hash( tree->link_table );
+
+  memset( tree->node, 0, sizeof( node_t ) * tree->node_num );
+  free( tree->node );
+
+  memset( tree->link, 0, sizeof( tree->link ) * tree->link_num );
+  free( tree->link );
 
   memset( tree, 0, sizeof( tree_t ) );
   free( tree );
@@ -122,8 +118,8 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
   heap_t *heap = create_heap( compare_heap_link, cache->link_num );
   die_if_NULL( heap );
 
-  node_t *treenode = ( node_t * )malloc( sizeof( node_t ) * cache->node_num );
-  link_t *treelink = ( link_t * )malloc( sizeof( link_t ) * cache->node_num - 1);
+  node_t *treenode = tree->node;
+  link_t *treelink = tree->link;
   unsigned int ncount = 0;
   unsigned int lcount = 0;
 

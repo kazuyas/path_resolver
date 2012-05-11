@@ -56,8 +56,10 @@ typedef struct {
 
 typedef struct {
   uint64_t root_dpid;
+  node_t *node;
   hash_table *node_table;
   size_t node_num;
+  link_t *link;
   hash_table *link_table;
   size_t link_num;
 } tree_t;
