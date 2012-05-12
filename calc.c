@@ -32,7 +32,7 @@ tree_t *
 create_tree( const topology_cache_t *cache, const uint64_t root, const hash_table *costmap ) {
   die_if_NULL( cache );
 
-  tree_t *tree = ( tree_t * )malloc( sizeof( tree_t ) );
+  tree_t *tree = xmalloc( sizeof( tree_t ) );
   if ( tree == NULL ) {
     return NULL;
   }
@@ -40,10 +40,8 @@ create_tree( const topology_cache_t *cache, const uint64_t root, const hash_tabl
   tree->root_dpid = root;
   tree->node_table = create_hash( compare_hash_node, hash_node );
   tree->link_table = create_hash( compare_hash_link, hash_link );
-  tree->node = ( node_t * )malloc( sizeof( node_t ) * cache->node_num );
-  memset( tree->node, 0, sizeof( node_t ) * cache->node_num );
-  tree->link = ( link_t * )malloc( sizeof( link_t ) * ( cache->node_num - 1 ) );
-  memset( tree->link, 0, sizeof( link_t ) * ( cache->node_num - 1 ) );
+  tree->node = xcalloc( cache->node_num, sizeof( node_t ) );
+  tree->link = xcalloc( cache->node_num - 1, sizeof( link_t ) );
 
   tree->node_num = 0;
   tree->link_num = 0;
@@ -67,13 +65,13 @@ destroy_tree( tree_t *tree ) {
   delete_hash( tree->link_table );
 
   memset( tree->node, 0, sizeof( node_t ) * tree->node_num );
-  free( tree->node );
+  xfree( tree->node );
 
   memset( tree->link, 0, sizeof( link_t ) * tree->link_num );
-  free( tree->link );
+  xfree( tree->link );
 
   memset( tree, 0, sizeof( tree_t ) );
-  free( tree );
+  xfree( tree );
 }
 
 
@@ -92,7 +90,7 @@ resolve_path_from_tree( const tree_t *tree, const uint64_t to ) {
     dlist_element *dl_element = get_first_element( node->in_links );
     link_t *link = dl_element->data;
 
-    hop_t *hop = ( hop_t * )malloc( sizeof( hop_t ) );
+    hop_t *hop = xmalloc( sizeof( hop_t ) );
     hop->datapath_id = link->from;
     hop->out_port = link->from_port;
 
@@ -109,7 +107,7 @@ void
 destroy_path( list_element *path ) {
   list_element *curr;
   for ( curr = path; curr != NULL; curr = curr->next ) {
-    free( curr->data );
+    xfree( curr->data );
   }
   delete_list( path );
 }

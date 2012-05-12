@@ -33,18 +33,18 @@ static void swap_in_heap( heap_t *heap, int i, int j );
 
 heap_t *
 create_heap( const compare_heap_function compare, const size_t size ) {
-  heap_t *heap = ( heap_t * )malloc( sizeof( heap_t ) );
+  heap_t *heap = xmalloc( sizeof( heap_t ) );
   if ( heap == NULL ) {
     return NULL;
   }
 
   heap->size = size;
   heap->element_num = 0;
-  heap->elements = ( void ** )malloc( sizeof( void * ) * size );
+  heap->elements = xcalloc( size, sizeof( void * ) );
   heap->compare = compare;
 
   if ( heap->elements == NULL ) {
-    free( heap );
+    xfree( heap );
     return NULL;
   }
 
@@ -58,8 +58,8 @@ destroy_heap( heap_t *heap ) {
     return;
   }
 
-  free( heap->elements );
-  free( heap );
+  xfree( heap->elements );
+  xfree( heap );
   return;
 }
 

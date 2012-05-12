@@ -24,10 +24,9 @@
 
 topology_cache_t *
 create_topology_cache() {
-  topology_cache_t *cache = ( topology_cache_t * )malloc( sizeof( topology_cache_t ) );
+  topology_cache_t *cache = xcalloc( 1, sizeof( topology_cache_t ) );
   die_if_NULL( cache );
 
-  memset( cache, 0, sizeof( topology_cache_t ) );
   cache->node_table = create_hash( compare_hash_node, hash_node );
   cache->link_table = create_hash( compare_hash_link, hash_link );
   cache->node_num = 0;
@@ -50,7 +49,7 @@ destroy_topology_cache( topology_cache_t *cache ) {
     delete_dlist( node->in_links );
     delete_dlist( node->out_links );
     memset( node, 0, sizeof( node_t ) );
-    free( node );
+    xfree( node );
   }
   delete_hash( cache->node_table );
 
@@ -58,12 +57,12 @@ destroy_topology_cache( topology_cache_t *cache ) {
   while ( ( entry = iterate_hash_next( &iter ) ) != NULL ) {
     link_t *link = entry->value;
     memset( link, 0, sizeof( link_t ) );
-    free( link );
+    xfree( link );
   }
   delete_hash( cache->link_table );
 
   memset( cache, 0, sizeof( topology_cache_t ) );
-  free( cache );
+  xfree( cache );
 
   return;
 }
@@ -73,10 +72,9 @@ node_t *
 add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, void *data ) {
   die_if_NULL( cache );
 
-  node_t *node = ( node_t * )malloc( sizeof( node_t ) );
+  node_t *node = xcalloc( 1, sizeof( node_t ) );
   die_if_NULL( node );
 
-  memset( node, 0, sizeof( node_t ) );
   node->datapath_id = datapath_id;
   node->data = data;
   node->in_links = create_dlist();
@@ -84,7 +82,7 @@ add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, void *da
 
   if ( lookup_hash_entry( cache->node_table, &node->datapath_id ) != NULL ) {
     error( "%s : Node (datapath_id=0x%lx) exists.", __func__ );
-    free( node );
+    xfree( node );
     return NULL;
   }
   insert_hash_entry( cache->node_table, &node->datapath_id, node );
@@ -103,7 +101,7 @@ del_node_from_cache( topology_cache_t *cache, const uint64_t datapath_id ) {
     delete_dlist( node->in_links );
     delete_dlist( node->out_links );
     memset( node, 0, sizeof( node_t ) );
-    free( node );
+    xfree( node );
     cache->node_num--;
   }
 
@@ -122,10 +120,9 @@ add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t fr
     return NULL;
   }
 
-  link_t *link = ( link_t * )malloc( sizeof( link_t ) );
+  link_t *link = xcalloc( 1, sizeof( link_t ) );
   die_if_NULL( link );
 
-  memset( link, 0, sizeof( link_t ) );
   link->id = id;
   link->from = from;
   link->from_port = from_port;
@@ -168,7 +165,7 @@ del_link_from_cache( topology_cache_t *cache, const uint64_t id ) {
   }
 
   memset( link, 0, sizeof( link_t ) );
-  free( link );
+  xfree( link );
 
   cache->link_num--;
 
