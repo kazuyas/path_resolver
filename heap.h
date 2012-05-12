@@ -22,7 +22,11 @@
 #define HEAP_H
 
 
-typedef int ( *compare_heap_function )( const void *value1, const void *value2 );
+#include <sys/types.h>
+#include "bool.h"
+
+
+typedef int ( *compare_heap_function )( const void *x, const void *y );
 
 
 typedef struct {
@@ -39,6 +43,7 @@ bool push_to_heap( heap_t *heap, void *value );
 void *pop_from_heap( heap_t *heap );
 void *remove_from_heap( heap_t *heap, int index );
 bool check_heap( heap_t *heap );
+
 
 #endif // HEAP_H
 

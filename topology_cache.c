@@ -18,8 +18,10 @@
  */
 
 
-#include "trema.h"
 #include "pathresolver.h"
+#include "log.h"
+#include "checks.h"
+#include "wrapper.h"
 
 
 topology_cache_t *

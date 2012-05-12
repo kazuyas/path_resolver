@@ -18,10 +18,8 @@
  */
 
 
-#include <sys/types.h>
-#include <stdlib.h>
-#include "trema.h"
 #include "heap.h"
+#include "wrapper.h"
 
 
 static void move_up( heap_t *heap, int index );
@@ -140,8 +138,9 @@ move_up( heap_t *heap, int index ) {
     void *child = heap->elements[ c_index ];
     void *parent = heap->elements[ p_index ];
 
-    if ( ( *heap->compare )( parent, child ) <= 0 )
+    if ( ( *heap->compare )( parent, child ) <= 0 ) {
       break;
+    }
 
     swap_in_heap( heap, p_index, c_index );
     c_index = p_index;
@@ -160,8 +159,9 @@ move_down( heap_t *heap, int index ) {
     void *child = heap->elements[ c_index ];
     void *parent = heap->elements[ p_index ];
 
-    if ( ( *heap->compare )( parent, child ) <= 0 )
+    if ( ( *heap->compare )( parent, child ) <= 0 ) {
       break;
+    }
 
     swap_in_heap( heap, p_index, c_index );
     p_index = c_index;

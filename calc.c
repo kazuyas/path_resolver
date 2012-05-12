@@ -19,8 +19,10 @@
 
 
 #include <assert.h>
-#include "trema.h"
 #include "pathresolver.h"
+#include "log.h"
+#include "wrapper.h"
+#include "checks.h"
 
 
 static void calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );

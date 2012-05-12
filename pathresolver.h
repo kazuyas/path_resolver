@@ -22,7 +22,12 @@
 #define PATHRESOLVER_H
 
 
+#include <stdint.h>
+#include <sys/types.h>
 #include "heap.h"
+#include "hash_table.h"
+#include "linked_list.h"
+#include "doubly_linked_list.h"
 
 
 typedef struct {

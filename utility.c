@@ -18,8 +18,6 @@
  */
 
 
-#include <sys/types.h>
-#include "trema.h"
 #include "pathresolver.h"
 
 
