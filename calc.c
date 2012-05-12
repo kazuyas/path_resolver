@@ -41,7 +41,10 @@ create_tree( const topology_cache_t *cache, const uint64_t root, const hash_tabl
   tree->node_table = create_hash( compare_hash_node, hash_node );
   tree->link_table = create_hash( compare_hash_link, hash_link );
   tree->node = ( node_t * )malloc( sizeof( node_t ) * cache->node_num );
+  memset( tree->node, 0, sizeof( node_t ) * cache->node_num );
   tree->link = ( link_t * )malloc( sizeof( link_t ) * ( cache->node_num - 1 ) );
+  memset( tree->link, 0, sizeof( link_t ) * ( cache->node_num - 1 ) );
+
   tree->node_num = 0;
   tree->link_num = 0;
 
@@ -55,7 +58,7 @@ void
 destroy_tree( tree_t *tree ) {
   die_if_NULL( tree );
 
-  for ( unsigned int i; i < tree->node_num; i++ ) {
+  for ( unsigned int i = 0; i < tree->node_num; i++ ) {
     delete_dlist( tree->node[ i ].in_links );
     delete_dlist( tree->node[ i ].out_links );
   }
@@ -66,7 +69,7 @@ destroy_tree( tree_t *tree ) {
   memset( tree->node, 0, sizeof( node_t ) * tree->node_num );
   free( tree->node );
 
-  memset( tree->link, 0, sizeof( tree->link ) * ( tree->node_num - 1 ) );
+  memset( tree->link, 0, sizeof( link_t ) * tree->link_num );
   free( tree->link );
 
   memset( tree, 0, sizeof( tree_t ) );
