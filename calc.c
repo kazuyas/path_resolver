@@ -25,7 +25,7 @@
 #include "checks.h"
 
 
-static void calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );
+static void calculate2( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );
 static void add_node_to_tree( tree_t *tree, node_t *treenode, node_t *node );
 static void add_link_to_tree( tree_t *tree, link_t *treelink, link_t *link );
 
@@ -48,7 +48,7 @@ create_tree( const topology_cache_t *cache, const uint64_t root, const hash_tabl
   tree->node_num = 0;
   tree->link_num = 0;
 
-  calculate( tree, cache, costmap );
+  calculate2( tree, cache, costmap );
 
   return tree;
 }
@@ -114,7 +114,7 @@ destroy_path( list_element *path ) {
   delete_list( path );
 }
 
-
+#if 0
 static void
 calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap ) {
   UNUSED( costmap );
@@ -155,6 +155,69 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
       candidate_node = lookup_hash_entry( tree->node_table,
                                           &candidate_link->to );
       if ( candidate_node == NULL ) {
+        break;
+      }
+    }
+
+    // Add the candidate node into tree.
+    assert( ncount < cache->node_num );
+    assert( lcount < cache->node_num - 1 );
+    node_t *node = lookup_hash_entry( cache->node_table,
+                                      &candidate_link->to );
+    add_node_to_tree( tree, &treenode[ ncount++ ], node );
+    add_link_to_tree( tree, &treelink[ lcount++ ], candidate_link );
+
+    // Prepare for next routine
+    cost = candidate_link->total_cost;
+    from_node = node;
+  }
+
+  destroy_heap( heap );
+}
+#endif
+
+static void
+calculate2( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap ) {
+  UNUSED( costmap );
+  heap_t *heap = create_heap( compare_heap_link, cache->link_num );
+  die_if_NULL( heap );
+
+  node_t *treenode = tree->node;
+  link_t *treelink = tree->link;
+  unsigned int ncount = 0;
+  unsigned int lcount = 0;
+
+  node_t *from_node = lookup_hash_entry( cache->node_table, &tree->root_dpid );
+  die_if_NULL( from_node );
+  add_node_to_tree( tree, &treenode[ ncount++ ], from_node );
+  uint16_t cost = 0;
+
+  for ( ; tree->node_num < cache->node_num; ) {
+    // Update phase
+    dlist_element *element;
+    for ( element = get_first_element( from_node->out_links );
+          element != NULL && element->data != NULL; // REVISIT
+          element = element->next ) {
+      link_t *link = ( link_t * )element->data;
+      if ( lookup_hash_entry( tree->node_table, &link->to ) != NULL ) {
+        // REVISIT  need to compare costs
+        continue;
+      }
+      push_to_heap( heap, link );
+      link->total_cost = ( uint16_t )( cost + 1 );
+    }
+
+    // Selection phase
+    link_t *candidate_link;
+    for ( ;; ) {
+      candidate_link = pop_from_heap( heap );
+      if ( candidate_link == NULL ) { // REVISIT
+        error( "Not found." );
+        destroy_heap( heap );
+        return;
+      }
+      if ( lookup_hash_entry( tree->node_table,
+                              &candidate_link->to ) == NULL ) {
         break;
       }
     }
