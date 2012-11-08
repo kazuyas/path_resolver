@@ -60,11 +60,23 @@ typedef struct {
 
 
 typedef struct {
+  uint64_t datapath_id;
+  dlist_element *in_links;
+  dlist_element *out_links;
+  uint32_t cost;
+  void *data;
+} treenode_t;
+
+
+typedef link_t treelink_t;
+
+
+typedef struct {
   uint64_t root_dpid;
-  node_t *node;
+  treenode_t *node;
   hash_table *node_table;
   size_t node_num;
-  link_t *link;
+  treelink_t *link;
   hash_table *link_table;
   size_t link_num;
 } tree_t;

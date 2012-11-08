@@ -28,8 +28,8 @@
 static void calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );
 static void update( heap_t *heap, node_t *from_node, uint16_t cost );
 static link_t *select_candidate( heap_t *heap, tree_t *tree );
-static void add_node_to_tree( tree_t *tree, node_t *treenode, node_t *node );
-static void add_link_to_tree( tree_t *tree, link_t *treelink, link_t *link );
+static void add_node_to_tree( tree_t *tree, treenode_t *treenode, node_t *node );
+static void add_link_to_tree( tree_t *tree, treelink_t *treelink, link_t *link );
 
 
 tree_t *
@@ -123,8 +123,8 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
   heap_t *heap = create_heap( compare_heap_link, cache->link_num );
   die_if_NULL( heap );
 
-  node_t *treenode = tree->node;
-  link_t *treelink = tree->link;
+  treenode_t *treenode = tree->node;
+  treelink_t *treelink = tree->link;
   unsigned int ncount = 0;
   unsigned int lcount = 0;
 
@@ -189,7 +189,7 @@ select_candidate( heap_t *heap, tree_t *tree ) {
 
 
 static void
-add_node_to_tree( tree_t *tree, node_t *treenode, node_t *node ) {
+add_node_to_tree( tree_t *tree, treenode_t *treenode, node_t *node ) {
   die_if_NULL( tree );
   die_if_NULL( node );
   die_if_NULL( treenode );
@@ -210,7 +210,7 @@ add_node_to_tree( tree_t *tree, node_t *treenode, node_t *node ) {
 
 
 static void
-add_link_to_tree( tree_t *tree, link_t *treelink, link_t *link ) {
+add_link_to_tree( tree_t *tree, treelink_t *treelink, link_t *link ) {
   die_if_NULL( tree );
   die_if_NULL( link );
   die_if_NULL( treelink );
