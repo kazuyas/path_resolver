@@ -140,9 +140,8 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
     // Selection phase
     link_t *candidate = select_candidate( heap, tree );
     if ( candidate == NULL ) { // REVISIT
-      error( "Not found." );
-      destroy_heap( heap );
-      return;
+      info( "Some nodes may be unconnected." );
+      break;
     }
 
     // Add the candidate node into tree.
