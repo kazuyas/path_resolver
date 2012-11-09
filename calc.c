@@ -26,7 +26,7 @@
 
 
 static void calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );
-static void update( heap_t *heap, node_t *from_node, uint16_t cost );
+static void insert_candidates( heap_t *heap, node_t *from_node, uint16_t cost );
 static link_t *select_candidate( heap_t *heap, tree_t *tree );
 static void add_node_to_tree( tree_t *tree, treenode_t *treenode, node_t *node );
 static void add_link_to_tree( tree_t *tree, treelink_t *treelink, link_t *link );
@@ -135,7 +135,7 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
 
   for ( ; tree->node_num < cache->node_num; ) {
     // Update phase
-    update( heap, from_node, cost );
+    insert_candidates( heap, from_node, cost );
 
     // Selection phase
     link_t *candidate = select_candidate( heap, tree );
@@ -162,7 +162,7 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
 
 
 static void
-update( heap_t *heap, node_t *from_node, uint16_t cost ) {
+insert_candidates( heap_t *heap, node_t *from_node, uint16_t cost ) {
   dlist_element *element;
   for ( element = get_first_element( from_node->out_links );
         element != NULL && element->data != NULL; // REVISIT
