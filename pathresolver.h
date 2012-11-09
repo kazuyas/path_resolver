@@ -44,7 +44,6 @@ typedef struct {
   uint16_t from_port;
   uint64_t to;
   uint16_t to_port;
-  uint16_t total_cost; // only for tree
   void *data;
 } link_t;
 
@@ -60,23 +59,11 @@ typedef struct {
 
 
 typedef struct {
-  uint64_t datapath_id;
-  dlist_element *in_links;
-  dlist_element *out_links;
-  uint32_t cost;
-  void *data;
-} treenode_t;
-
-
-typedef link_t treelink_t;
-
-
-typedef struct {
   uint64_t root_dpid;
-  treenode_t *node;
+  node_t *node;
   hash_table *node_table;
   size_t node_num;
-  treelink_t *link;
+  link_t *link;
   hash_table *link_table;
   size_t link_num;
 } tree_t;
@@ -86,6 +73,12 @@ typedef struct {
   uint64_t datapath_id;
   uint16_t out_port;
 } hop_t;
+
+
+typedef struct {
+  link_t *link;
+  uint16_t cost;
+} heap_link_t;
 
 
 tree_t *create_tree( const topology_cache_t *cache, const uint64_t root, const hash_table *costmap );

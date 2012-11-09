@@ -26,10 +26,10 @@
 
 
 static void calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );
-static void insert( heap_t *heap, node_t *from_node, uint16_t cost );
+static int insert( heap_t *heap, node_t *from_node, uint16_t cost, heap_link_t *heap_links );
 static link_t *select_candidate( heap_t *heap, tree_t *tree );
-static void add_node_to_tree( tree_t *tree, treenode_t *treenode, node_t *node );
-static void add_link_to_tree( tree_t *tree, treelink_t *treelink, link_t *link );
+static void add_node_to_tree( tree_t *tree, node_t *treenode, node_t *node );
+static void add_link_to_tree( tree_t *tree, link_t *treelink, link_t *link );
 
 
 tree_t *
@@ -123,8 +123,12 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
   heap_t *heap = create_heap( compare_heap_link, cache->link_num );
   die_if_NULL( heap );
 
-  treenode_t *treenode = tree->node;
-  treelink_t *treelink = tree->link;
+  heap_link_t *heap_links = xcalloc( cache->link_num, sizeof( heap_link_t ) );
+  die_if_NULL( heap_links );
+  heap_link_t *heap_links_start = heap_links;
+
+  node_t *treenode = tree->node;
+  link_t *treelink = tree->link;
 
   node_t *from_node = lookup_hash_entry( cache->node_table, &tree->root_dpid );
   die_if_NULL( from_node );
@@ -133,7 +137,7 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
 
   for ( ; tree->node_num < cache->node_num; ) {
     // Update phase
-    insert( heap, from_node, cost );
+    heap_links += insert( heap, from_node, cost, heap_links );
 
     // Selection phase
     link_t *candidate = select_candidate( heap, tree );
@@ -151,28 +155,38 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
     from_node = node;
   }
 
+  xfree( heap_links_start );
   destroy_heap( heap );
 }
 
 
-static void
-insert( heap_t *heap, node_t *from_node, uint16_t cost ) {
+static int
+insert( heap_t *heap, node_t *from_node, uint16_t cost, heap_link_t *heap_links ) {
+  int insert_num = 0;
   dlist_element *element;
   for ( element = get_first_element( from_node->out_links );
         element != NULL && element->data != NULL; // REVISIT
         element = element->next ) {
-    link_t *link = ( link_t * )element->data;
-    push_to_heap( heap, link );
-    link->total_cost = ( uint16_t )( cost + 1 );
+    heap_link_t *heap_link = heap_links++;
+    heap_link->link = ( link_t * )element->data;
+    heap_link->cost = ( uint16_t )( cost + 1 );
+    push_to_heap( heap, heap_link );
+    insert_num++;
   }
+  return insert_num;
 }
 
 
 static link_t *
 select_candidate( heap_t *heap, tree_t *tree ) {
-  link_t *link, *candidate = NULL;
+  link_t *candidate = NULL;
   for ( ;; ) {
-    link = pop_from_heap( heap );
+    heap_link_t *heap_link = pop_from_heap( heap );
+    if ( heap_link == NULL ) {
+      break;
+    }
+
+    link_t *link = heap_link->link;
     if ( lookup_hash_entry( tree->node_table, &link->to ) == NULL ) {
       candidate = link;
       break;
@@ -183,7 +197,7 @@ select_candidate( heap_t *heap, tree_t *tree ) {
 
 
 static void
-add_node_to_tree( tree_t *tree, treenode_t *treenode, node_t *node ) {
+add_node_to_tree( tree_t *tree, node_t *treenode, node_t *node ) {
   die_if_NULL( tree );
   die_if_NULL( node );
   die_if_NULL( treenode );
@@ -204,7 +218,7 @@ add_node_to_tree( tree_t *tree, treenode_t *treenode, node_t *node ) {
 
 
 static void
-add_link_to_tree( tree_t *tree, treelink_t *treelink, link_t *link ) {
+add_link_to_tree( tree_t *tree, link_t *treelink, link_t *link ) {
   die_if_NULL( tree );
   die_if_NULL( link );
   die_if_NULL( treelink );

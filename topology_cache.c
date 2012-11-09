@@ -194,10 +194,10 @@ hash_node( const void *value ) {
 
 int
 compare_heap_link( const void *value1, const void *value2 ) {
-  const link_t *link1 = ( const link_t * )value1;
-  const link_t *link2 = ( const link_t * )value2;
+  const heap_link_t *link1 = ( const heap_link_t * )value1;
+  const heap_link_t *link2 = ( const heap_link_t * )value2;
 
-  return compare_heap_uint64( &link1->total_cost, &link2->total_cost );
+  return compare_heap_uint16( &link1->cost, &link2->cost );
 }
 
 
