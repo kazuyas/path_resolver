@@ -26,7 +26,7 @@
 
 
 static void calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap );
-static void insert_candidates( heap_t *heap, node_t *from_node, uint16_t cost );
+static void insert( heap_t *heap, node_t *from_node, uint16_t cost );
 static link_t *select_candidate( heap_t *heap, tree_t *tree );
 static void add_node_to_tree( tree_t *tree, treenode_t *treenode, node_t *node );
 static void add_link_to_tree( tree_t *tree, treelink_t *treelink, link_t *link );
@@ -125,17 +125,15 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
 
   treenode_t *treenode = tree->node;
   treelink_t *treelink = tree->link;
-  unsigned int ncount = 0;
-  unsigned int lcount = 0;
 
   node_t *from_node = lookup_hash_entry( cache->node_table, &tree->root_dpid );
   die_if_NULL( from_node );
-  add_node_to_tree( tree, &treenode[ ncount++ ], from_node );
+  add_node_to_tree( tree, treenode++, from_node );
   uint16_t cost = 0;
 
   for ( ; tree->node_num < cache->node_num; ) {
     // Update phase
-    insert_candidates( heap, from_node, cost );
+    insert( heap, from_node, cost );
 
     // Selection phase
     link_t *candidate = select_candidate( heap, tree );
@@ -145,12 +143,9 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
     }
 
     // Add the candidate node into tree.
-    assert( ncount < cache->node_num );
-    assert( lcount < cache->node_num - 1 );
-    node_t *node = lookup_hash_entry( cache->node_table,
-                                      &candidate->to );
-    add_node_to_tree( tree, &treenode[ ncount++ ], node );
-    add_link_to_tree( tree, &treelink[ lcount++ ], candidate );
+    node_t *node = lookup_hash_entry( cache->node_table, &candidate->to );
+    add_node_to_tree( tree, treenode++, node );
+    add_link_to_tree( tree, treelink++, candidate );
 
     // Prepare for next routine
     from_node = node;
@@ -161,7 +156,7 @@ calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costma
 
 
 static void
-insert_candidates( heap_t *heap, node_t *from_node, uint16_t cost ) {
+insert( heap_t *heap, node_t *from_node, uint16_t cost ) {
   dlist_element *element;
   for ( element = get_first_element( from_node->out_links );
         element != NULL && element->data != NULL; // REVISIT
