@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include "heap.h"
+#include "heap_utility.h"
 #include "hash_table.h"
 #include "linked_list.h"
 #include "doubly_linked_list.h"
@@ -100,11 +101,6 @@ unsigned int hash_node( const void *value );
 int compare_heap_link( const void *value1, const void *value2 );
 bool compare_hash_link( const void *value1, const void *value2 );
 unsigned int hash_link( const void *value );
-
-int compare_heap_uint64( const void *value1, const void *value2 );
-int compare_heap_uint32( const void *value1, const void *value2 );
-int compare_heap_uint16( const void *value1, const void *value2 );
-int compare_heap_uint8( const void *value1, const void *value2 );
 
 
 #endif // PATHRESOLVER_H

@@ -18,7 +18,7 @@
  */
 
 
-#include "pathresolver.h"
+#include "heap_utility.h"
 
 
 int
