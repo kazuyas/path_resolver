@@ -52,7 +52,7 @@ typedef struct {
 typedef struct {
   hash_table *node_table;
   size_t node_num;
-  hash_table *link_table;
+  hash_table *link_table_by_id;
   size_t link_num;
   uint64_t link_id;
   hash_table *tree_table;
@@ -101,9 +101,9 @@ void del_link_from_cache( topology_cache_t *cache, const uint64_t id );
 int compare_heap_node( const void *value1, const void *value2 );
 bool compare_hash_node( const void *value1, const void *value2 );
 unsigned int hash_node( const void *value );
-int compare_heap_link( const void *value1, const void *value2 );
-bool compare_hash_link( const void *value1, const void *value2 );
-unsigned int hash_link( const void *value );
+int compare_heap_link_by_id( const void *value1, const void *value2 );
+bool compare_hash_link_by_id( const void *value1, const void *value2 );
+unsigned int hash_link_by_id( const void *value );
 
 
 #endif // PATHRESOLVER_H

@@ -30,7 +30,7 @@ create_topology_cache() {
   die_if_NULL( cache );
 
   cache->node_table = create_hash( compare_hash_node, hash_node );
-  cache->link_table = create_hash( compare_hash_link, hash_link );
+  cache->link_table_by_id = create_hash( compare_hash_link_by_id, hash_link_by_id );
   cache->node_num = 0;
   cache->link_num = 0;
   cache->link_id = 0;
@@ -56,13 +56,13 @@ destroy_topology_cache( topology_cache_t *cache ) {
   }
   delete_hash( cache->node_table );
 
-  init_hash_iterator( cache->link_table, &iter );
+  init_hash_iterator( cache->link_table_by_id, &iter );
   while ( ( entry = iterate_hash_next( &iter ) ) != NULL ) {
     link_t *link = entry->value;
     memset( link, 0, sizeof( link_t ) );
     xfree( link );
   }
-  delete_hash( cache->link_table );
+  delete_hash( cache->link_table_by_id );
 
   memset( cache, 0, sizeof( topology_cache_t ) );
   xfree( cache );
@@ -141,11 +141,11 @@ add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t fr
   link->to_port = to_port;
   link->data = data;
 
-  if ( lookup_hash_entry( cache->link_table, &link->id ) != NULL ) {
+  if ( lookup_hash_entry( cache->link_table_by_id, &link->id ) != NULL ) {
     error( "%s : Link (id=0x%lx) exists.", __func__, id );
     return NULL;
   }
-  insert_hash_entry( cache->link_table, &link->id, link );
+  insert_hash_entry( cache->link_table_by_id, &link->id, link );
 
   insert_before_dlist( from_node->out_links, link );
   insert_before_dlist( to_node->in_links, link );
@@ -160,7 +160,7 @@ void
 del_link_from_cache( topology_cache_t *cache, const uint64_t id ) {
   die_if_NULL( cache );
 
-  link_t *link = delete_hash_entry( cache->link_table, &id );
+  link_t *link = delete_hash_entry( cache->link_table_by_id, &id );
   if ( link == NULL ) {
     return;
   }
@@ -202,7 +202,7 @@ hash_node( const void *value ) {
 
 
 int
-compare_heap_link( const void *value1, const void *value2 ) {
+compare_heap_link_by_id( const void *value1, const void *value2 ) {
   const heap_link_t *link1 = ( const heap_link_t * )value1;
   const heap_link_t *link2 = ( const heap_link_t * )value2;
 
@@ -211,7 +211,7 @@ compare_heap_link( const void *value1, const void *value2 ) {
 
 
 bool
-compare_hash_link( const void *value1, const void *value2 ) {
+compare_hash_link_by_id( const void *value1, const void *value2 ) {
   const link_t *link1 = ( const link_t * )value1;
   const link_t *link2 = ( const link_t * )value2;
 
@@ -220,7 +220,7 @@ compare_hash_link( const void *value1, const void *value2 ) {
 
 
 unsigned int
-hash_link( const void *value ) {
+hash_link_by_id( const void *value ) {
   const link_t *link = ( const link_t * )value;
 
   return hash_datapath_id( &link->id );

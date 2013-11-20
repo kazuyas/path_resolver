@@ -43,7 +43,7 @@ create_tree( const topology_cache_t *cache, const uint64_t root, const hash_tabl
 
   tree->root_dpid = root;
   tree->node_table = create_hash( compare_hash_node, hash_node );
-  tree->link_table = create_hash( compare_hash_link, hash_link );
+  tree->link_table = create_hash( compare_hash_link_by_id, hash_link_by_id );
   tree->node = xcalloc( cache->node_num, sizeof( node_t ) );
   tree->link = xcalloc( cache->node_num - 1, sizeof( link_t ) );
 
@@ -120,7 +120,7 @@ destroy_path( list_element *path ) {
 static void
 calculate( tree_t *tree, const topology_cache_t *cache, const hash_table *costmap ) {
   UNUSED( costmap );
-  heap_t *heap = create_heap( compare_heap_link, cache->link_num );
+  heap_t *heap = create_heap( compare_heap_link_by_id, cache->link_num );
   die_if_NULL( heap );
 
   heap_link_t *heap_links = xcalloc( cache->link_num, sizeof( heap_link_t ) );
