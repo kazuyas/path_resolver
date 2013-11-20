@@ -31,6 +31,7 @@ create_topology_cache() {
 
   cache->node_table = create_hash( compare_hash_node, hash_node );
   cache->link_table_by_id = create_hash( compare_hash_link_by_id, hash_link_by_id );
+  cache->link_table_by_ends = create_hash( compare_hash_link_by_ends, hash_link_by_ends );
   cache->node_num = 0;
   cache->link_num = 0;
   cache->link_id = 0;
@@ -63,6 +64,7 @@ destroy_topology_cache( topology_cache_t *cache ) {
     xfree( link );
   }
   delete_hash( cache->link_table_by_id );
+  delete_hash( cache->link_table_by_ends );
 
   memset( cache, 0, sizeof( topology_cache_t ) );
   xfree( cache );
@@ -121,6 +123,14 @@ get_link_id( topology_cache_t *cache ) {
 
 
 link_t *
+lookup_link_by_ends( topology_cache_t *cache, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port ) {
+  link_t link = { 0, from, from_port, to, to_port, NULL };
+  
+  return ( link_t * )lookup_hash_entry( cache->link_table_by_ends, &link );
+}
+
+
+link_t *
 add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port, void *data ) {
   die_if_NULL( cache );
 
@@ -146,6 +156,7 @@ add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t fr
     return NULL;
   }
   insert_hash_entry( cache->link_table_by_id, &link->id, link );
+  insert_hash_entry( cache->link_table_by_ends, link, link );
 
   insert_before_dlist( from_node->out_links, link );
   insert_before_dlist( to_node->in_links, link );
@@ -164,6 +175,7 @@ del_link_from_cache( topology_cache_t *cache, const uint64_t id ) {
   if ( link == NULL ) {
     return;
   }
+  delete_hash_entry( cache->link_table_by_ends, link );
 
   node_t *from_node = lookup_hash_entry( cache->node_table, &link->from );
   if ( from_node != NULL ) {

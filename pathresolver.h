@@ -96,7 +96,7 @@ node_t *add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, 
 void del_node_from_cache( topology_cache_t *cache, const uint64_t datapath_id );
 
 uint64_t get_link_id( topology_cache_t *cache );
-link_t lookup_link_by_ends( topology_cache_t *cache, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port );
+link_t *lookup_link_by_ends( topology_cache_t *cache, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port );
 link_t *add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port, void *data );
 void del_link_from_cache( topology_cache_t *cache, const uint64_t id );
 
