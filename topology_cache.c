@@ -33,6 +33,7 @@ create_topology_cache() {
   cache->link_table = create_hash( compare_hash_link, hash_link );
   cache->node_num = 0;
   cache->link_num = 0;
+  cache->link_id = 0;
 
   return cache;
 }
@@ -67,6 +68,13 @@ destroy_topology_cache( topology_cache_t *cache ) {
   xfree( cache );
 
   return;
+}
+
+
+uint64_t get_link_id( topology_cache_t *cache ) {
+  die_if_NULL( cache );
+
+  return ++cache->link_id;
 }
 
 

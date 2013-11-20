@@ -54,6 +54,7 @@ typedef struct {
   size_t node_num;
   hash_table *link_table;
   size_t link_num;
+  uint64_t link_id;
   hash_table *tree_table;
   size_t tree_num;
 } topology_cache_t;
@@ -90,6 +91,7 @@ void destroy_path( list_element *path );
 topology_cache_t *create_topology_cache();
 void destroy_topology_cache( topology_cache_t *cache );
 
+uint64_t get_link_id( topology_cache_t *cache );
 node_t *add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, void *data );
 void del_node_from_cache( topology_cache_t *cache, const uint64_t datapath_id );
 link_t *add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port, void *data );
