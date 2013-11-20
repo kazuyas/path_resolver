@@ -83,7 +83,7 @@ add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, void *da
   node->out_links = create_dlist();
 
   if ( lookup_hash_entry( cache->node_table, &node->datapath_id ) != NULL ) {
-    error( "%s : Node (datapath_id=0x%lx) exists.", __func__ );
+    error( "%s : Node (datapath_id=0x%lx) exists.", __func__, datapath_id );
     xfree( node );
     return NULL;
   }
@@ -133,7 +133,7 @@ add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t fr
   link->data = data;
 
   if ( lookup_hash_entry( cache->link_table, &link->id ) != NULL ) {
-    error( "%s : Link (id=0x%lx) exists.", __func__ );
+    error( "%s : Link (id=0x%lx) exists.", __func__, id );
     return NULL;
   }
   insert_hash_entry( cache->link_table, &link->id, link );
