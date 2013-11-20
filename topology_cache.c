@@ -71,13 +71,6 @@ destroy_topology_cache( topology_cache_t *cache ) {
 }
 
 
-uint64_t get_link_id( topology_cache_t *cache ) {
-  die_if_NULL( cache );
-
-  return ++cache->link_id;
-}
-
-
 node_t *
 add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, void *data ) {
   die_if_NULL( cache );
@@ -116,6 +109,14 @@ del_node_from_cache( topology_cache_t *cache, const uint64_t datapath_id ) {
   }
 
   return;
+}
+
+
+uint64_t
+get_link_id( topology_cache_t *cache ) {
+  die_if_NULL( cache );
+
+  return ++cache->link_id;
 }
 
 
