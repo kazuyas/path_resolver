@@ -53,6 +53,7 @@ typedef struct {
   hash_table *node_table;
   size_t node_num;
   hash_table *link_table_by_id;
+  hash_table *link_table_by_ends;
   size_t link_num;
   uint64_t link_id;
   hash_table *tree_table;
@@ -95,6 +96,7 @@ node_t *add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, 
 void del_node_from_cache( topology_cache_t *cache, const uint64_t datapath_id );
 
 uint64_t get_link_id( topology_cache_t *cache );
+link_t lookup_link_by_ends( topology_cache_t *cache, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port );
 link_t *add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port, void *data );
 void del_link_from_cache( topology_cache_t *cache, const uint64_t id );
 
@@ -104,6 +106,8 @@ unsigned int hash_node( const void *value );
 int compare_heap_link_by_id( const void *value1, const void *value2 );
 bool compare_hash_link_by_id( const void *value1, const void *value2 );
 unsigned int hash_link_by_id( const void *value );
+bool compare_hash_link_by_ends( const void *value1, const void *value2 );
+unsigned int hash_link_by_ends( const void *value );
 
 
 #endif // PATHRESOLVER_H

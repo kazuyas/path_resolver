@@ -227,6 +227,37 @@ hash_link_by_id( const void *value ) {
 }
 
 
+bool
+compare_hash_link_by_ends( const void *value1, const void *value2 ) {
+  const link_t *link1 = ( const link_t * )value1;
+  const link_t *link2 = ( const link_t * )value2;
+
+  if ( link1->from != link2->from ) {
+    return false;
+  } else if ( link1->from_port != link2->from_port ) {
+    return false;
+  } else if ( link1->to != link2->to ) {
+    return false;
+  } else if ( link1->to_port != link2->to_port ) {
+    return false;
+  } 
+  
+  return true;
+}
+
+
+unsigned int
+hash_link_by_ends( const void *value ) {
+  link_t link;
+
+  memcpy( &link, value, sizeof( link_t ) );
+  link.id = 0;
+  link.data = NULL;
+  
+  return hash_core( &link, sizeof( link_t ) );
+}
+
+
 /*
  * Local variables:
  * c-basic-offset: 2
