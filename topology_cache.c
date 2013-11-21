@@ -24,6 +24,17 @@
 #include "wrapper.h"
 
 
+#define SET_PARAM_TO_LINK( _link, _p1, _p2, _p3, _p4, _p5, _p6 ) \
+  {                                                              \
+    _link->id = _p1;                                             \
+    _link->from = _p2;                                           \
+    _link->from_port = _p3;                                      \
+    _link->to = _p4;                                             \
+    _link->to_port = _p5;                                        \
+    _link->data = _p6;                                           \
+  }
+
+
 topology_cache_t *
 create_topology_cache() {
   topology_cache_t *cache = xcalloc( 1, sizeof( topology_cache_t ) );
@@ -124,9 +135,17 @@ get_link_id( topology_cache_t *cache ) {
 
 link_t *
 lookup_link_by_ends( topology_cache_t *cache, const uint64_t from, const uint16_t from_port, const uint64_t to, const uint16_t to_port ) {
-  link_t link = { 0, from, from_port, to, to_port, NULL };
-  
-  return ( link_t * )lookup_hash_entry( cache->link_table_by_ends, &link );
+  link_t *link;
+
+  link_t *key = ( link_t * )xcalloc( 1, sizeof( link_t ) );
+  die_if_NULL( key );
+  SET_PARAM_TO_LINK( key, 0, from, from_port, to, to_port, NULL );
+
+  link = ( link_t * )lookup_hash_entry( cache->link_table_by_ends, key );
+
+  xfree( key );
+
+  return link;
 }
 
 
@@ -141,22 +160,26 @@ add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t fr
     return NULL;
   }
 
+  if ( lookup_link_by_ends( cache, from, from_port, to, to_port ) != NULL ) {
+    error( "%s : Link has already resistered.", __func__ );
+    return NULL;
+  }
+
   link_t *link = xcalloc( 1, sizeof( link_t ) );
   die_if_NULL( link );
-
-  link->id = id;
-  link->from = from;
-  link->from_port = from_port;
-  link->to = to;
-  link->to_port = to_port;
-  link->data = data;
-
+  SET_PARAM_TO_LINK( link, id, from, from_port, to, to_port, data );
   if ( lookup_hash_entry( cache->link_table_by_id, &link->id ) != NULL ) {
     error( "%s : Link (id=0x%lx) exists.", __func__, id );
+    xfree( link );
     return NULL;
   }
   insert_hash_entry( cache->link_table_by_id, &link->id, link );
-  insert_hash_entry( cache->link_table_by_ends, link, link );
+
+  link_t *key = xcalloc( 1, sizeof( link_t ) );
+  die_if_NULL( key );
+  SET_PARAM_TO_LINK( key, 0, from, from_port, to, to_port, NULL );
+  insert_hash_entry( cache->link_table_by_ends, key, link );
+  xfree( key );  
 
   insert_before_dlist( from_node->out_links, link );
   insert_before_dlist( to_node->in_links, link );
@@ -252,8 +275,8 @@ compare_hash_link_by_ends( const void *value1, const void *value2 ) {
     return false;
   } else if ( link1->to_port != link2->to_port ) {
     return false;
-  } 
-  
+  }
+
   return true;
 }
 
@@ -265,7 +288,7 @@ hash_link_by_ends( const void *value ) {
   memcpy( &link, value, sizeof( link_t ) );
   link.id = 0;
   link.data = NULL;
-  
+
   return hash_core( &link, sizeof( link_t ) );
 }
 
