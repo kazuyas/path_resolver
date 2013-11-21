@@ -69,6 +69,7 @@ typedef struct {
   link_t *link;
   hash_table *link_table;
   size_t link_num;
+  bool reverse;
 } tree_t;
 
 
@@ -85,8 +86,10 @@ typedef struct {
 
 
 tree_t *create_tree( const topology_cache_t *cache, const uint64_t root, const hash_table *costmap );
+tree_t *create_reverse_tree( const topology_cache_t *cache, const uint64_t root, const hash_table *costmap );
 void destroy_tree( tree_t *tree );
 list_element *resolve_path_from_tree( const tree_t *tree, const uint64_t to );
+list_element *resolve_path_from_reverse_tree( const tree_t *tree, const uint64_t from );
 void destroy_path( list_element *path );
 
 topology_cache_t *create_topology_cache();
