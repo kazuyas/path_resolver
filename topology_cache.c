@@ -97,7 +97,7 @@ add_node_to_cache( topology_cache_t *cache, const uint64_t datapath_id, void *da
   node->out_links = create_dlist();
 
   if ( lookup_hash_entry( cache->node_table, &node->datapath_id ) != NULL ) {
-    error( "%s : Node (datapath_id=0x%lx) exists.", __func__, datapath_id );
+    debug( "%s : Node (datapath_id=0x%lx) exists.", __func__, datapath_id );
     xfree( node );
     return NULL;
   }
@@ -156,12 +156,12 @@ add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t fr
   node_t *from_node = lookup_hash_entry( cache->node_table, &from );
   node_t *to_node = lookup_hash_entry( cache->node_table, &to );
   if ( from_node == NULL || to_node == NULL ) {
-    error( "%s : not found.\n", __func__ );
+    debug( "%s : not found.\n", __func__ );
     return NULL;
   }
 
   if ( lookup_link_by_ends( cache, from, from_port, to, to_port ) != NULL ) {
-    error( "%s : Link has already resistered.", __func__ );
+    debug( "%s : Link has already resistered.", __func__ );
     return NULL;
   }
 
@@ -169,7 +169,7 @@ add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t fr
   die_if_NULL( link );
   SET_PARAM_TO_LINK( link, id, from, from_port, to, to_port, data );
   if ( lookup_hash_entry( cache->link_table_by_id, &link->id ) != NULL ) {
-    error( "%s : Link (id=0x%lx) exists.", __func__, id );
+    debug( "%s : Link (id=0x%lx) exists.", __func__, id );
     xfree( link );
     return NULL;
   }
@@ -179,7 +179,6 @@ add_link_to_cache( topology_cache_t *cache, const uint64_t id, const uint64_t fr
   die_if_NULL( key );
   SET_PARAM_TO_LINK( key, 0, from, from_port, to, to_port, NULL );
   insert_hash_entry( cache->link_table_by_ends, key, link );
-  xfree( key );  
 
   insert_before_dlist( from_node->out_links, link );
   insert_before_dlist( to_node->in_links, link );
@@ -198,6 +197,9 @@ del_link_from_cache( topology_cache_t *cache, const uint64_t id ) {
   if ( link == NULL ) {
     return;
   }
+
+  link->id = 0;
+  link->data = NULL;
   delete_hash_entry( cache->link_table_by_ends, link );
 
   node_t *from_node = lookup_hash_entry( cache->node_table, &link->from );
