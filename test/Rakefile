@@ -1,0 +1,61 @@
+require 'rake/clean'
+
+#
+# Definitions
+#
+TREMA = "../../trema"
+
+CC = "gcc"
+CFLAGS = "`#{ TREMA }/trema-config --cflags` -g -std=gnu99 -D_GNU_SOURCE -fno-strict-aliasing -Werror -Wall -Wextra -Wformat=2 -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wfloat-equal -Wpointer-arith -I.."
+LDFLAGS = "-L.. -lpathresolver `#{ TREMA }/trema-config --libs`"
+
+#
+# 
+#
+def sources
+  FileList[ "*.c" ]
+end 
+
+def objects
+  sources.ext( 'o' )
+end
+
+def binaries 
+  bins = []
+  sources.each do | each |
+    bins << File.basename( each, ".*" )
+  end
+  bins
+end  
+
+#
+# Task : build
+#
+task :default => binaries
+
+binaries.each do | each |
+  file each => each + ".o" do | target |
+    sh "#{ CC } #{ target.prerequisites } #{ LDFLAGS } -o #{ target.name }"
+  end
+end
+
+rule ".o" => ".c" do | target |
+  sh "#{ CC } #{ CFLAGS } -c #{ target.source }"
+end
+
+#
+# Task : test
+#
+
+task :test do
+  binaries.each do | each |
+    binary = File.join( File.dirname( __FILE__ ), each )
+    sh "#{ binary }"
+  end
+end
+
+#
+# Task : clean
+#
+CLEAN.include( objects )
+CLOBBER.include( binaries )
